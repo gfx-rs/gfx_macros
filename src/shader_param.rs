@@ -49,7 +49,7 @@ fn classify(node: &ast::Ty_) -> Result<Param, ParamError> {
     }
 }
 
-/// Generates the the method body for `gfx::shade::ParamValues::create_link`
+/// Generates the the method body for `gfx::shade::ShaderParam::create_link`
 fn method_create(cx: &mut ext::base::ExtCtxt,
                  span: codemap::Span,
                  definition: &ast::StructDef,
@@ -130,7 +130,7 @@ fn method_create(cx: &mut ext::base::ExtCtxt,
     cx.block_expr(expr)
 }
 
-/// Generates the the method body for `gfx::shade::ParamValues::fill_params`
+/// Generates the the method body for `gfx::shade::ShaderParam::fill_params`
 fn method_fill(cx: &mut ext::base::ExtCtxt,
                span: codemap::Span,
                definition: &ast::StructDef,
