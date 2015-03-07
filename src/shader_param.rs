@@ -365,7 +365,7 @@ impl ItemDecorator for ShaderParam {
                     id: ast::DUMMY_NODE_ID,
                 },
                 ast::Arg {
-                    ty: quote_ty!(context, $extern_hack::gfx::shade::ParamValues<$resource_ident>),
+                    ty: quote_ty!(context, &mut $extern_hack::gfx::ParamStorage<$resource_ident>),
                     pat: context.pat_ident(span, context.ident_of("out")),
                     id: ast::DUMMY_NODE_ID,
                 },
