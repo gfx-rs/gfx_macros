@@ -46,16 +46,18 @@ fn test_vertex_format() {
     use secret_lib::gfx::attrib::{Type, IntSubType, FloatSubType,
                                   IntSize, FloatSize, SignFlag,
                                   Format, Stride};
-    use secret_lib::gfx;
-    use secret_lib::gfx::device::{BufferInfo, BufferUsage, BufferHandle, HandleFactory};
+    use secret_lib::{gfx, Res};
+    use secret_lib::gfx::device::{BufferInfo, BufferUsage};
+    use secret_lib::gfx::device::handle::{Buffer, Manager, Producer};
 
-    let info = BufferInfo {
+    let mut hm = Manager::new();
+    let handle = hm.make_buffer((), BufferInfo {
         usage: BufferUsage::Static,
         size: 0,
-    };
-    let handle = ().make_handle((), info);
-    let buf_vert: BufferHandle<(), MyVertex> = BufferHandle::from_raw(handle);
-    let buf_inst: BufferHandle<(), MyInstance> = BufferHandle::from_raw(handle);
+    });
+
+    let buf_vert: Buffer<Res, MyVertex>   = Buffer::from_raw(handle.clone());
+    let buf_inst: Buffer<Res, MyInstance> = Buffer::from_raw(handle.clone());
     let mesh = gfx::Mesh::from_format_instanced::<MyVertex, MyInstance>(buf_vert, 0, buf_inst);
     let stride_vert = 34 as Stride;
     let stride_inst = 8 as Stride;
@@ -63,7 +65,7 @@ fn test_vertex_format() {
     assert_eq!(mesh.attributes, vec![
         gfx::Attribute {
             name: "a0".to_string(),
-            buffer: buf_vert.raw(),
+            buffer: handle.clone(),
             format: Format {
                 elem_count: 2,
                 elem_type: Type::Float(FloatSubType::Default, FloatSize::F32),
@@ -74,7 +76,7 @@ fn test_vertex_format() {
         },
         gfx::Attribute {
             name: "a1".to_string(),
-            buffer: buf_vert.raw(),
+            buffer: handle.clone(),
             format: Format {
                 elem_count: 1,
                 elem_type: Type::Int(IntSubType::Normalized, IntSize::U16, SignFlag::Signed),
@@ -85,7 +87,7 @@ fn test_vertex_format() {
         },
         gfx::Attribute {
             name: "a2".to_string(),
-            buffer: buf_vert.raw(),
+            buffer: handle.clone(),
             format: Format {
                 elem_count: 4,
                 elem_type: Type::Int(IntSubType::AsFloat, IntSize::U8, SignFlag::Signed),
@@ -96,7 +98,7 @@ fn test_vertex_format() {
         },
         gfx::Attribute {
             name: "a3".to_string(),
-            buffer: buf_vert.raw(),
+            buffer: handle.clone(),
             format: Format {
                 elem_count: 1,
                 elem_type: Type::Float(FloatSubType::Precision, FloatSize::F64),
@@ -107,7 +109,7 @@ fn test_vertex_format() {
         },
         gfx::Attribute {
             name: "a_a4".to_string(),
-            buffer: buf_vert.raw(),
+            buffer: handle.clone(),
             format: Format {
                 elem_count: 3,
                 elem_type: Type::Float(FloatSubType::Default, FloatSize::F32),
@@ -118,7 +120,7 @@ fn test_vertex_format() {
         },
         gfx::Attribute {
             name: "a0".to_string(),
-            buffer: buf_vert.raw(),
+            buffer: handle.clone(),
             format: Format {
                 elem_count: 2,
                 elem_type: Type::Float(FloatSubType::Default, FloatSize::F32),

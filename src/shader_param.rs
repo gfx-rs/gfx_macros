@@ -38,9 +38,9 @@ fn classify(node: &ast::Ty_) -> Result<Param, ParamError> {
         ast::TyPath(_,ref path) => match path.segments.last() {
             Some(segment) => match segment.identifier.name.as_str() {
                 "RawBufferHandle" => Ok(Param::Block),
-                "TextureParam" => Ok(Param::Texture),
-                "TextureHandle" => Err(ParamError::DeprecatedTexture),
-                "PhantomData"   => Ok(Param::Special),
+                "TextureParam"    => Ok(Param::Texture),
+                "TextureHandle"   => Err(ParamError::DeprecatedTexture),
+                "PhantomData"     => Ok(Param::Special),
                 _ => Ok(Param::Uniform),
             },
             None => Ok(Param::Uniform),
@@ -165,7 +165,7 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
                     if out.blocks.len() <= id as usize {
                         unsafe { out.blocks.set_len(id as usize + 1) }
                     }
-                    *out.blocks.get_mut(id as usize).unwrap() = {self.$name}
+                    *out.blocks.get_mut(id as usize).unwrap() = {self.$name.clone()}
                 })
             ),
             Param::Texture => quote_stmt!(cx,
@@ -173,7 +173,7 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
                     if out.textures.len() <= id as usize {
                         unsafe { out.textures.set_len(id as usize + 1) }
                     }
-                    *out.textures.get_mut(id as usize).unwrap() = {self.$name}
+                    *out.textures.get_mut(id as usize).unwrap() = {self.$name.clone()}
                 })
             ),
             Param::Special => quote_stmt!(cx, ()),

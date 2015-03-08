@@ -14,3 +14,17 @@
 
 extern crate "gfx" as gfx_;
 pub use self::gfx_ as gfx;
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct Res;
+
+impl gfx::Resources for Res {
+    type Buffer = ();
+    type ArrayBuffer = ();
+    type Shader = ();
+    type Program = ();
+    type FrameBuffer = ();
+    type Surface = ();
+    type Texture = ();
+    type Sampler = ();
+}

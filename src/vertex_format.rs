@@ -104,7 +104,7 @@ fn decode_type(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
                     ""
                 }
             });
-            let size = cx.ident_of(&format!("F{}", ty_str.slice_from(1)));
+            let size = cx.ident_of(&format!("F{}", &ty_str[1..]));
             quote_expr!(cx, $path_root::gfx::attrib::Type::Float($path_root::gfx::attrib::FloatSubType::$kind,
                                                                  $path_root::gfx::attrib::FloatSize::$size))
         },
@@ -124,7 +124,7 @@ fn decode_type(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
                     ""
                 }
             });
-            let size = cx.ident_of(&format!("U{}", ty_str.slice_from(1)));
+            let size = cx.ident_of(&format!("U{}", &ty_str[1..]));
             quote_expr!(cx, $path_root::gfx::attrib::Type::Int($path_root::gfx::attrib::IntSubType::$kind,
                                                                $path_root::gfx::attrib::IntSize::$size,
                                                                $path_root::gfx::attrib::SignFlag::$sign))
@@ -184,7 +184,7 @@ fn method_body(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
                     quote_expr!(cx, {
                         attributes.push($path_root::gfx::Attribute {
                             name: $ident_str.to_string(),
-                            buffer: $buffer_expr,
+                            buffer: $buffer_expr.clone(),
                             format: $path_root::gfx::attrib::Format {
                                 elem_count: $count_expr,
                                 elem_type: $type_expr,
