@@ -154,26 +154,17 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
         classify(&field.node.ty.node).ok().map(|param| match param {
             Param::Uniform => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    if out.uniforms.len() <= id as usize {
-                        unsafe { out.uniforms.set_len(id as usize + 1) }
-                    }
-                    *out.uniforms.get_mut(id as usize).unwrap() = self.$name.to_uniform()
+                    out.uniforms[id as usize] = Some(self.$name.to_uniform());
                 })
             ),
             Param::Block   => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    if out.blocks.len() <= id as usize {
-                        unsafe { out.blocks.set_len(id as usize + 1) }
-                    }
-                    *out.blocks.get_mut(id as usize).unwrap() = {self.$name.clone()}
+                    out.blocks[id as usize] = Some(self.$name.clone());
                 })
             ),
             Param::Texture => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    if out.textures.len() <= id as usize {
-                        unsafe { out.textures.set_len(id as usize + 1) }
-                    }
-                    *out.textures.get_mut(id as usize).unwrap() = {self.$name.clone()}
+                    out.textures[id as usize] = Some(self.$name.clone());
                 })
             ),
             Param::Special => quote_stmt!(cx, ()),

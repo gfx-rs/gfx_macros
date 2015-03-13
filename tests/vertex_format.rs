@@ -47,11 +47,12 @@ fn test_vertex_format() {
                                   IntSize, FloatSize, SignFlag,
                                   Format, Stride};
     use secret_lib::{gfx, Res};
-    use secret_lib::gfx::device::{BufferInfo, BufferUsage};
+    use secret_lib::gfx::device::{BufferRole, BufferInfo, BufferUsage};
     use secret_lib::gfx::device::handle::{Buffer, Manager, Producer};
 
     let mut hm = Manager::new();
     let handle = hm.make_buffer((), BufferInfo {
+        role: BufferRole::Vertex,
         usage: BufferUsage::Static,
         size: 0,
     });
