@@ -139,6 +139,7 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
     let max_num = cx.expr_usize(span, definition.fields.len());
     let mut calls = vec![
         quote_stmt!(cx, use self::$path_root::gfx::shade::ToUniform;),
+        quote_stmt!(cx, use ::std::mem::{replace, forget};),
         quote_stmt!(cx, out.uniforms.reserve($max_num);),
         quote_stmt!(cx, out.blocks.reserve($max_num);),
         quote_stmt!(cx, out.textures.reserve($max_num);),
@@ -154,26 +155,32 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
         classify(&field.node.ty.node).ok().map(|param| match param {
             Param::Uniform => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    if out.uniforms.len() <= id as usize {
-                        unsafe { out.uniforms.set_len(id as usize + 1) }
+                    unsafe {
+                        if out.uniforms.len() <= id as usize {
+                            out.uniforms.set_len(id as usize + 1)
+                        }
+                        forget(replace(out.uniforms.get_unchecked_mut(id as usize), self.$name.to_uniform()))
                     }
-                    *out.uniforms.get_mut(id as usize).unwrap() = self.$name.to_uniform()
                 })
             ),
             Param::Block   => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    if out.blocks.len() <= id as usize {
-                        unsafe { out.blocks.set_len(id as usize + 1) }
+                    unsafe {
+                        if out.blocks.len() <= id as usize {
+                            out.blocks.set_len(id as usize + 1)
+                        }
+                        forget(replace(out.blocks.get_unchecked_mut(id as usize), {self.$name.clone()}))
                     }
-                    *out.blocks.get_mut(id as usize).unwrap() = {self.$name.clone()}
                 })
             ),
             Param::Texture => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    if out.textures.len() <= id as usize {
-                        unsafe { out.textures.set_len(id as usize + 1) }
+                    unsafe {
+                        if out.textures.len() <= id as usize {
+                            out.textures.set_len(id as usize + 1)
+                        }
+                        forget(replace(out.textures.get_unchecked_mut(id as usize), {self.$name.clone()}))
                     }
-                    *out.textures.get_mut(id as usize).unwrap() = {self.$name.clone()}
                 })
             ),
             Param::Special => quote_stmt!(cx, ()),
