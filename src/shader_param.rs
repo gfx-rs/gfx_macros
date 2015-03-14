@@ -191,51 +191,53 @@ fn node_to_var_type(cx: &mut ext::base::ExtCtxt,
     quote_ty!(cx, Option<$path_root::gfx::shade::$id>)
 }
 
-fn impl_type(cx: &mut ext::base::ExtCtxt, span: codemap::Span, name: &str, type_ident: ast::Ident) -> ast::ImplItem {
-    ast::TypeImplItem(P(ast::Typedef {
+fn impl_type(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
+             name: &str, type_ident: ast::Ident) -> ast::ImplItem {
+    ast::ImplItem {
         id: ast::DUMMY_NODE_ID,
-        span: span,
         ident: cx.ident_of(name),
         vis: ast::Visibility::Inherited,
         attrs: Vec::new(),
-        typ: cx.ty_ident(span, type_ident),
-    }))
+        node: ast::TypeImplItem(cx.ty_ident(span, type_ident)),
+        span: span
+    }
 }
 
 fn impl_method(cx: &mut ext::base::ExtCtxt, span: codemap::Span, name: &str,
                with_self: bool, declaration: P<ast::FnDecl>, body: P<ast::Block>)
                -> ast::ImplItem {
-    ast::MethodImplItem(P(ast::Method {
-        attrs: Vec::new(),
+    ast::ImplItem {
         id: ast::DUMMY_NODE_ID,
-        span: span,
-        node: ast::MethDecl(
-            cx.ident_of(name),
-            ast::Generics {
-                lifetimes: Vec::new(),
-                ty_params: OwnedSlice::empty(),
-                where_clause: ast::WhereClause {
-                    id: ast::DUMMY_NODE_ID,
-                    predicates: Vec::new(),
+        ident: cx.ident_of(name),
+        vis: ast::Visibility::Inherited,
+        attrs: Vec::new(),
+        node: ast::MethodImplItem(
+            ast::MethodSig {
+                unsafety: ast::Unsafety::Normal,
+                abi: abi::Abi::Rust,
+                decl: declaration,
+                generics: ast::Generics {
+                    lifetimes: Vec::new(),
+                    ty_params: OwnedSlice::empty(),
+                    where_clause: ast::WhereClause {
+                        id: ast::DUMMY_NODE_ID,
+                        predicates: Vec::new()
+                    }
                 },
-            },
-            abi::Abi::Rust,
-            codemap::Spanned {
-                node: if with_self {
+                explicit_self: codemap::Spanned {
+                    node: if with_self {
                         ast::SelfRegion(None, ast::MutImmutable, cx.ident_of("self"))
-                    }else {
+                    } else {
                         ast::SelfStatic
-                },
-                span: span,
+                    },
+                    span: span
+                }
             },
-            ast::Unsafety::Normal,
-            declaration,
-            body,
-            ast::Visibility::Inherited
-        )
-    }))
+            body
+        ),
+        span: span
+    }
 }
-
 
 #[derive(Copy)]
 pub struct ShaderParam;
@@ -366,10 +368,10 @@ impl ItemDecorator for ShaderParam {
 
         // construct implementations for types and methods
         let impls = vec![
-            impl_type(context, span, "Resources", resource_ident),
-            impl_type(context, span, "Link", link_ident),
-            impl_method(context, span, "create_link", false, decl_create, body_create),
-            impl_method(context, span, "fill_params", true, decl_fill, body_fill),
+            P(impl_type(context, span, "Resources", resource_ident)),
+            P(impl_type(context, span, "Link", link_ident)),
+            P(impl_method(context, span, "create_link", false, decl_create, body_create)),
+            P(impl_method(context, span, "fill_params", true, decl_fill, body_fill))
         ];
 
         // final implementation item
