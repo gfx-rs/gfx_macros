@@ -170,6 +170,7 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
             Param::Special => quote_stmt!(cx, ()),
         })
     }));
+    let calls = calls.map_in_place(Option::unwrap);
     cx.block_all(span, calls, None)
 }
 
@@ -272,7 +273,7 @@ impl ItemDecorator for ShaderParam {
                 return;
             }
         };
-        
+
         // derive and push
         let link_name = format!("_{}Link", item.ident.as_str());
         let link_ident = context.ident_of(&link_name);
