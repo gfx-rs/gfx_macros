@@ -278,14 +278,15 @@ impl ItemDecorator for ShaderParam {
         let link_name = format!("_{}Link", item.ident.as_str());
         let link_ident = context.ident_of(&link_name);
         let link_item = context.item_struct(span, link_ident, link_def)
-                               .map(|mut item| {
-            item.attrs.push(context.attribute(span,
+                               .map(|mut litem| {
+            litem.attrs.push(context.attribute(span,
                 context.meta_list(span, token::InternedString::new("derive"), vec![
                         context.meta_word(span, token::InternedString::new("Copy")),
                         context.meta_word(span, token::InternedString::new("Debug")),
                 ])
             ));
-            item
+            litem.vis = item.vis;
+            litem
         });
         (*push)(link_item);
 
