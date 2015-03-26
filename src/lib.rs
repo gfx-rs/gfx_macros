@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#![feature(plugin_registrar, quote, box_syntax, rustc_private)]
+#![feature(collections, plugin_registrar, quote, box_syntax, rustc_private)]
 #![deny(missing_copy_implementations)]
 
 //! Macro extensions crate.
@@ -93,10 +93,7 @@ fn extern_crate_hack<F>(context: &mut ext::base::ExtCtxt,
                 vis: ast::Inherited,
                 attrs: vec![],
                 node: ast::ItemExternCrate(
-                    Some((
-                        token::InternedString::new("gfx"),
-                        ast::CookedStr
-                    )),
+                    Some(context.ident_of("gfx").name)
                 ),
                 id: ast::DUMMY_NODE_ID,
                 ident: token::str_to_ident("gfx_")
