@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-extern crate "gfx" as gfx_;
+extern crate gfx as gfx_;
 pub use self::gfx_ as gfx;
 
 #[derive(Clone, Debug, PartialEq)]
