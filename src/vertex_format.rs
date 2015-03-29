@@ -173,7 +173,7 @@ fn method_body(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
             let attribute_pushes = definition.fields.iter().zip(fields.iter())
                 .map(|(def, &(ident, _))| {
                     let struct_ident = substr.type_ident;
-                    let buffer_expr = &substr.nonself_args[1];
+                    let buffer_expr = &substr.nonself_args[0];
                     let (count_expr, type_expr) = decode_count_and_type(cx, span, def, path_root);
                     let ident_str = match super::find_name(cx, span, &def.node.attrs) {
                         Some(name) => name,
@@ -243,7 +243,7 @@ impl ItemDecorator for VertexFormat {
             additional_bounds: Vec::new(),
             generics: generic::ty::LifetimeBounds::empty(),
             methods: vec![
-                // `fn generate(Option<Self>, gfx::RawBufferHandle) -> Vec<gfx::Attribute>`
+                // `fn generate(gfx::RawBufferHandle) -> Vec<gfx::Attribute>`
                 generic::MethodDef {
                     name: "generate",
                     generics: generic::ty::LifetimeBounds {
@@ -258,15 +258,6 @@ impl ItemDecorator for VertexFormat {
                     },
                     explicit_self: None,
                     args: vec![
-                        generic::ty::Literal(generic::ty::Path {
-                            path: vec!["Option"],
-                            lifetime: None,
-                            params: vec![box generic::ty::Ptr(
-                                box generic::ty::Self_,
-                                generic::ty::PtrTy::Borrowed(None, ast::Mutability::MutImmutable)
-                            )],
-                            global: false,
-                        }),
                         generic::ty::Literal(generic::ty::Path {
                             path: vec![super::EXTERN_CRATE_HACK, "gfx", "RawBufferHandle"],
                             lifetime: None,
