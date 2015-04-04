@@ -19,7 +19,7 @@ use syntax::owned_slice::OwnedSlice;
 use syntax::parse::token;
 use syntax::ptr::P;
 
-#[derive(Copy, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 enum Param {
     Uniform,
     Block,
@@ -27,7 +27,7 @@ enum Param {
     Special,
 }
 
-#[derive(Copy, Debug)]
+#[derive(Copy, Clone, Debug)]
 enum ParamError {
     DeprecatedTexture,
 }
@@ -240,7 +240,7 @@ fn impl_method(cx: &mut ext::base::ExtCtxt, span: codemap::Span, name: &str,
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ShaderParam;
 impl ItemDecorator for ShaderParam {
     /// Decorator for `shader_param` attribute
@@ -282,6 +282,7 @@ impl ItemDecorator for ShaderParam {
             litem.attrs.push(context.attribute(span,
                 context.meta_list(span, token::InternedString::new("derive"), vec![
                         context.meta_word(span, token::InternedString::new("Copy")),
+                        context.meta_word(span, token::InternedString::new("Clone")),
                         context.meta_word(span, token::InternedString::new("Debug")),
                 ])
             ));
