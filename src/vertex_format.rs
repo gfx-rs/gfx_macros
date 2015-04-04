@@ -23,7 +23,7 @@ use syntax::ptr::P;
 use syntax::ext::base::ItemDecorator;
 
 /// A component modifier.
-#[derive(Copy, PartialEq)]
+#[derive(Copy, Clone, PartialEq)]
 enum Modifier {
     /// Corresponds to the `#[normalized]` attribute.
     ///
@@ -219,7 +219,7 @@ fn method_body(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct VertexFormat;
 
 impl ItemDecorator for VertexFormat {

@@ -15,7 +15,7 @@
 extern crate gfx as gfx_;
 pub use self::gfx_ as gfx;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Res;
 
 impl gfx::Resources for Res {
