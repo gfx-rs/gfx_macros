@@ -37,10 +37,10 @@ fn classify(node: &ast::Ty_) -> Result<Param, ParamError> {
     match *node {
         ast::TyPath(_,ref path) => match path.segments.last() {
             Some(segment) => match segment.identifier.name.as_str() {
-                "RawBufferHandle" => Ok(Param::Block),
-                "TextureParam"    => Ok(Param::Texture),
-                "TextureHandle"   => Err(ParamError::DeprecatedTexture),
-                "PhantomData"     => Ok(Param::Special),
+                "RawBuffer"    => Ok(Param::Block),
+                "TextureParam" => Ok(Param::Texture),
+                "Texture"      => Err(ParamError::DeprecatedTexture),
+                "PhantomData"  => Ok(Param::Special),
                 _ => Ok(Param::Uniform),
             },
             None => Ok(Param::Uniform),
@@ -174,7 +174,7 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
     cx.block_all(span, calls, None)
 }
 
-/// A helper function that translates variable type (`i32`, `TextureHandle`, etc)
+/// A helper function that translates variable type (`i32`, `Texture`, etc)
 /// into the corresponding shader var id type (`VarUniform`, `VarBlock`, or `VarTexture`)
 fn node_to_var_type(cx: &mut ext::base::ExtCtxt,
                     span: codemap::Span, node: &ast::Ty_,
@@ -185,7 +185,7 @@ fn node_to_var_type(cx: &mut ext::base::ExtCtxt,
         Ok(Param::Texture) => "VarTexture",
         Ok(Param::Special) => return quote_ty!(cx, Option<()>),
         Err(ParamError::DeprecatedTexture) => {
-            cx.span_err(span, "Use gfx::shade::TextureParam for texture vars instead of gfx::shade::TextureHandle");
+            cx.span_err(span, "Use gfx::shade::TextureParam for texture vars instead of gfx::handle::Texture");
             ""
         },
     });

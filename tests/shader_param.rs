@@ -26,7 +26,7 @@ struct TestParam<R: gfx::Resources> {
     a: i32,
     b: [f32; 4],
     c: gfx::shade::TextureParam<R>,
-    d: gfx::RawBufferHandle<R>,
+    d: gfx::handle::RawBuffer<R>,
     e: f32,
     #[name = "a_f"]
     f: [f32; 4],

@@ -243,7 +243,7 @@ impl ItemDecorator for VertexFormat {
             additional_bounds: Vec::new(),
             generics: generic::ty::LifetimeBounds::empty(),
             methods: vec![
-                // `fn generate(gfx::RawBufferHandle) -> Vec<gfx::Attribute>`
+                // `fn generate(gfx::handle::RawBuffer) -> Vec<gfx::Attribute>`
                 generic::MethodDef {
                     name: "generate",
                     generics: generic::ty::LifetimeBounds {
@@ -259,7 +259,7 @@ impl ItemDecorator for VertexFormat {
                     explicit_self: None,
                     args: vec![
                         generic::ty::Literal(generic::ty::Path {
-                            path: vec![super::EXTERN_CRATE_HACK, "gfx", "RawBufferHandle"],
+                            path: vec![super::EXTERN_CRATE_HACK, "gfx", "handle", "RawBuffer"],
                             lifetime: None,
                             params: vec![box generic::ty::Literal(generic::ty::Path::new_local("R"))],
                             global: false,
