@@ -184,7 +184,7 @@ fn method_body(cx: &mut ext::base::ExtCtxt, span: codemap::Span,
                     quote_expr!(cx, {
                         attributes.push($path_root::gfx::Attribute {
                             name: $ident_str.to_string(),
-                            buffer: $buffer_expr.clone(),
+                            buffer: $buffer_expr.raw().clone(),
                             format: $path_root::gfx::attrib::Format {
                                 elem_count: $count_expr,
                                 elem_type: $type_expr,
@@ -258,12 +258,18 @@ impl ItemDecorator for VertexFormat {
                     },
                     explicit_self: None,
                     args: vec![
-                        generic::ty::Literal(generic::ty::Path {
-                            path: vec![super::EXTERN_CRATE_HACK, "gfx", "handle", "RawBuffer"],
-                            lifetime: None,
-                            params: vec![box generic::ty::Literal(generic::ty::Path::new_local("R"))],
-                            global: false,
-                        }),
+                        generic::ty::Ptr(
+                            box generic::ty::Literal(generic::ty::Path {
+                                path: vec![super::EXTERN_CRATE_HACK, "gfx", "handle", "Buffer"],
+                                lifetime: None,
+                                params: vec![
+                                    box generic::ty::Literal(generic::ty::Path::new_local("R")),
+                                    box generic::ty::Self_,
+                                ],
+                                global: false,
+                            }),
+                            generic::ty::PtrTy::Borrowed(None, ast::Mutability::MutImmutable),
+                        ),
                     ],
                     ret_ty: generic::ty::Literal(
                         generic::ty::Path {

@@ -96,9 +96,10 @@ fn method_create(cx: &mut ext::base::ExtCtxt,
             ))
         ).collect()
     };
-    let uniform_arms = gen_arms(Param::Uniform, cx.ident_of("VarUniform"));
-    let block_arms = gen_arms(Param::Block, cx.ident_of("VarBlock"));
-    let texture_arms = gen_arms(Param::Texture, cx.ident_of("VarTexture"));
+    let par_ident = cx.ident_of("ParameterId");
+    let uniform_arms = gen_arms(Param::Uniform, par_ident);
+    let block_arms = gen_arms(Param::Block, par_ident);
+    let texture_arms = gen_arms(Param::Texture, par_ident);
     let expr = quote_expr!(cx, {
         let mut out = $init_expr;
         for (i, u) in $input.uniforms.iter().enumerate() {
@@ -134,11 +135,10 @@ fn method_create(cx: &mut ext::base::ExtCtxt,
 fn method_fill(cx: &mut ext::base::ExtCtxt,
                span: codemap::Span,
                definition: &ast::StructDef,
-               path_root: ast::Ident)
+               _path_root: ast::Ident)
                -> P<ast::Block> {
     let max_num = cx.expr_usize(span, definition.fields.len());
     let mut calls = vec![
-        quote_stmt!(cx, use self::$path_root::gfx::shade::ToUniform;),
         quote_stmt!(cx, out.uniforms.reserve($max_num);),
         quote_stmt!(cx, out.blocks.reserve($max_num);),
         quote_stmt!(cx, out.textures.reserve($max_num);),
@@ -154,7 +154,7 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
         classify(&field.node.ty.node).ok().map(|param| match param {
             Param::Uniform => quote_stmt!(cx,
                 link.$name.map_or((), |id| {
-                    out.uniforms[id as usize] = Some(self.$name.to_uniform());
+                    out.uniforms[id as usize] = Some(self.$name.into());
                 })
             ),
             Param::Block   => quote_stmt!(cx,
@@ -175,14 +175,12 @@ fn method_fill(cx: &mut ext::base::ExtCtxt,
 }
 
 /// A helper function that translates variable type (`i32`, `Texture`, etc)
-/// into the corresponding shader var id type (`VarUniform`, `VarBlock`, or `VarTexture`)
+/// into ParameterId
 fn node_to_var_type(cx: &mut ext::base::ExtCtxt,
                     span: codemap::Span, node: &ast::Ty_,
                     path_root: ast::Ident) -> P<ast::Ty> {
     let id = cx.ident_of(match classify(node) {
-        Ok(Param::Uniform) => "VarUniform",
-        Ok(Param::Block)   => "VarBlock",
-        Ok(Param::Texture) => "VarTexture",
+        Ok(Param::Uniform) | Ok(Param::Block) | Ok(Param::Texture) => "ParameterId",
         Ok(Param::Special) => return quote_ty!(cx, Option<()>),
         Err(ParamError::DeprecatedTexture) => {
             cx.span_err(span, "Use gfx::shade::TextureParam for texture vars instead of gfx::handle::Texture");
